@@ -1,0 +1,103 @@
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
+import Link from "next/link";
+import { Suspense } from "react";
+import { ynsClient } from "../src/yns-client";
+import { CartProvider } from "./cart/cart-context";
+import { CartSidebar } from "./cart/cart-sidebar";
+import { CartButton } from "./cart-button";
+import { Footer } from "./footer";
+import "./globals.css";
+import { Toaster } from "../src/components/ui/sonner";
+import { UserMenu } from "./user-menu";
+import { ShoppingCartIcon } from "lucide-react";
+
+const geistSans = Geist({
+	variable: "--font-geist-sans",
+	subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+	title: "Your Next Store",
+	description: "Your next e-commerce store",
+};
+
+function CartButtonFallback() {
+	return (
+		<div className="p-2 rounded-full w-10 h-10" aria-description="Loading cart">
+			<ShoppingCartIcon className="w-6 h-6 opacity-20" />
+		</div>
+	);
+}
+
+async function getInitialCart() {
+	const cookieStore = await cookies();
+	const cartId = cookieStore.get("cartId")?.value;
+
+	if (!cartId) {
+		return { cart: null, cartId: null };
+	}
+
+	try {
+		const cart = await ynsClient.cartGet({ cartId });
+		return { cart: cart ?? null, cartId };
+	} catch {
+		return { cart: null, cartId };
+	}
+}
+
+async function CartProviderWrapper({ children }: { children: React.ReactNode }) {
+	const { cart, cartId } = await getInitialCart();
+
+	return (
+		<CartProvider initialCart={cart} initialCartId={cartId}>
+			<div className="flex min-h-screen flex-col">
+				<header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+						<div className="flex items-center justify-between h-16">
+							<Link href="/" className="text-xl font-bold">
+								Your Next Store
+							</Link>
+							<div className="flex items-center gap-4">
+								<Suspense fallback={<div className="w-8 h-8" />}>
+									<UserMenu />
+								</Suspense>
+								<Suspense fallback={<CartButtonFallback />}>
+									<CartButton />
+								</Suspense>
+							</div>
+						</div>
+					</div>
+				</header>
+				<div className="flex-1">
+					<Suspense>{children}</Suspense>
+				</div>
+				<Footer />
+			</div>
+			<CartSidebar />
+		</CartProvider>
+	);
+}
+
+export default function RootLayout({
+	children,
+}: Readonly<{
+	children: React.ReactNode;
+}>) {
+	return (
+		<html lang="en">
+			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+				<Suspense>
+					<CartProviderWrapper>{children}</CartProviderWrapper>
+				</Suspense>
+				<Toaster />
+			</body>
+		</html>
+	);
+}
