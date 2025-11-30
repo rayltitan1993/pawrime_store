@@ -7,6 +7,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   trustHost: true,
-  skipCSRFCheck: process.env.NODE_ENV !== "production",
   ...authConfig,
 });
