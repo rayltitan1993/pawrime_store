@@ -5,7 +5,7 @@ import { ynsClient } from "../../../../src/yns-client";
 import { auth } from "../../../../auth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2024-11-20.acacia", // Ensure this matches your Stripe Dashboard API version
+  apiVersion: "2025-11-17.clover", // Ensure this matches your Stripe Dashboard API version
 });
 
 export async function POST(req: NextRequest) {
