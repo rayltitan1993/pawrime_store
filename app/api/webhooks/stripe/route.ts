@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       }
 
       try {
-        const shipping = session.shipping_details;
+        const shipping = session.shipping;
         const address = shipping?.address;
 
         const order = await prisma.order.create({
