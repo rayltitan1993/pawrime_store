@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   // Handle the event
   switch (event.type) {
     case "checkout.session.completed":
-      const session = event.data.object as Stripe.Checkout.Session;
+      const session = event.data.object as any;
 
       if (!session.metadata?.cartId) {
         console.error("Checkout session missing cartId in metadata.", session);
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       }
 
       try {
-        const shipping = session.shipping;
+        const shipping = session.shipping_details;
         const address = shipping?.address;
 
         const order = await prisma.order.create({
