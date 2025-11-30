@@ -10,9 +10,9 @@ export async function authenticate(prevState: string | undefined, formData: Form
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
-          return "Invalid credentials.";
+          return { message: "Invalid credentials." };
         default:
-          return "Something went wrong.";
+          return { message: "Something went wrong." };
       }
     }
     throw error;
