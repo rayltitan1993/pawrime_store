@@ -18,9 +18,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 	);
 }
 
-const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> }) => {
+const ProductDetails = async ({ slug }: { slug: string }) => {
 	"use cache";
-	const { slug } = await params;
 	const product = await ynsClient.productGet({ slug });
 
 	if (!product) {
