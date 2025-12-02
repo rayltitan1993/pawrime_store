@@ -20,10 +20,10 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
 const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> }) => {
 	"use cache";
 	const { slug } = await params;
-	const product = await ynsClient.productGet({ idOrSlug: slug });
+	const product = await ynsClient.productGet({ slug });
 
 	if (!product) {
-		notFound();
+		return notFound();
 	}
 
 	const prices = product.variants.map((v) => BigInt(v.price));

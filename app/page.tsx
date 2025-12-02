@@ -68,7 +68,7 @@ async function ProductGrid() {
 			</div>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-				{products.data.map((product) => {
+				{products.map((product) => {
 					const prices = product.variants.map((v) => BigInt(v.price));
 					const minPrice = prices.length > 0 ? prices.reduce((a, b) => (a < b ? a : b)) : 0n;
 					const maxPrice = prices.length > 0 ? prices.reduce((a, b) => (a > b ? a : b)) : 0n;
