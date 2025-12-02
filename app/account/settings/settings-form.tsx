@@ -2,10 +2,10 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { changePassword, addAddress, deleteAddress, setDefaultAddress } from "./actions";
-import { Button } from "../../../../src/components/ui/button";
-import { Input } from "../../../../src/components/ui/input";
-import { Label } from "../../../../src/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../../src/components/ui/card";
+import { Button } from "../../../src/components/ui/button";
+import { Input } from "../../../src/components/ui/input";
+import { Label } from "../../../src/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../src/components/ui/card";
 import { toast } from "sonner";
 import { Address } from "@prisma/client";
 import { Trash2, Check, Plus } from "lucide-react";
@@ -17,8 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../../../src/components/ui/dialog";
-import { Checkbox } from "../../../../src/components/ui/checkbox";
+} from "../../../src/components/ui/dialog";
+import { Checkbox } from "../../../src/components/ui/checkbox";
 
 interface SettingsFormProps {
   addresses: Address[];

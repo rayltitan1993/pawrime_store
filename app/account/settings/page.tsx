@@ -1,5 +1,5 @@
-import { auth } from "../../../../auth";
-import { prisma } from "../../../../src/lib/prisma";
+import { auth } from "../../../auth";
+import { prisma } from "../../../src/lib/prisma";
 import SettingsForm from "./settings-form";
 
 export default async function SettingsPage() {
