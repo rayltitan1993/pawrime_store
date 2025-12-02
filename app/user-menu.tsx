@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../src/components/ui/dropdown-menu";
-import { User, LogOut, Package } from "lucide-react";
+import { User, LogOut, Package, Settings } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -62,12 +62,18 @@ export async function UserMenu() {
                 <span>Orders</span>
             </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+            <Link href="/account/settings" className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+            </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <form
             action={async () => {
               "use server";
-              await signOut();
+              await signOut({ redirectTo: "/" });
             }}
             className="w-full"
           >
