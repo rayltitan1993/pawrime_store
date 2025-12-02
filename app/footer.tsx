@@ -5,18 +5,29 @@ const footerLinks = [
 		title: "Shop",
 		links: [
 			{ name: "All Products", href: "/" },
+			{ name: "New Arrivals", href: "/new" },
+			{ name: "Best Sellers", href: "/best-sellers" },
+			{ name: "Sale", href: "/sale" },
 		],
 	},
 	{
 		title: "Support",
 		links: [
 			{ name: "Account", href: "/account" },
+			{ name: "Help Center", href: "/help" },
+			{ name: "Shipping & Returns", href: "/shipping" },
+			{ name: "Size Guide", href: "/size-guide" },
+			{ name: "Contact Us", href: "/contact" },
 		],
 	},
 	{
 		title: "Company",
 		links: [
-			// Placeholder links removed to fix 404 errors
+			{ name: "About Us", href: "/about" },
+			{ name: "Careers", href: "/careers" },
+			{ name: "Press", href: "/press" },
+			{ name: "Privacy Policy", href: "/privacy" },
+			{ name: "Terms of Service", href: "/terms" },
 		],
 	},
 ];

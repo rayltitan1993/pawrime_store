@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 					currency: "usd",
 					product_data: {
 						name: item.productVariant.product.name,
-						description: item.productVariant.product.summary,
+						description: item.productVariant.product.summary || undefined,
 						images: item.productVariant.images.length > 0 
                             ? item.productVariant.images 
                             : item.productVariant.product.images,
