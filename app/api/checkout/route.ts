@@ -58,6 +58,7 @@ export async function POST(request: Request) {
 
 		const session = await auth();
 		const userId = session?.user?.id;
+        console.log("[Checkout API] Authenticated User ID:", userId || "Guest");
 
 		// Create Stripe Session
 		console.log("Creating Stripe session...");

@@ -94,8 +94,15 @@ export async function POST(req: NextRequest) {
         });
         console.log(`[Stripe Webhook] Order created successfully: ${order.id}`);
 
-        // Optionally clear the cart after order creation (if using persistent cart)
-        // For now, our mock cart clears on server restart.
+        // Clear the cart
+        if (cartId) {
+            await prisma.cart.delete({
+                where: { id: cartId }
+            }).catch(err => {
+                console.error(`[Stripe Webhook] Failed to delete cart ${cartId}:`, err);
+            });
+            console.log(`[Stripe Webhook] Cart deleted: ${cartId}`);
+        }
 
       } catch (dbError: any) {
         console.error("[Stripe Webhook] Error creating order in database:", dbError);
