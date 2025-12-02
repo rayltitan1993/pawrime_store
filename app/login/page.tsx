@@ -7,12 +7,15 @@ import { Label } from "../../src/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import Link from "next/link";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, Suspense } from "react";
 import { authenticate, handleSocialLogin } from "./actions";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, dispatch] = useActionState(authenticate, undefined);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   useEffect(() => {
     if (state?.message) {
@@ -31,11 +34,13 @@ export default function LoginPage() {
         {/* Social Logins */}
         <div className="grid gap-2">
           <form action={handleSocialLogin.bind(null, "google")}>
+            <input type="hidden" name="redirectTo" value={callbackUrl} />
             <Button variant="outline" className="w-full" type="submit">
               <FcGoogle className="mr-2 h-4 w-4" /> Sign in with Google
             </Button>
           </form>
           <form action={handleSocialLogin.bind(null, "github")}>
+            <input type="hidden" name="redirectTo" value={callbackUrl} />
             <Button variant="outline" className="w-full" type="submit">
               <FaGithub className="mr-2 h-4 w-4" /> Sign in with GitHub
             </Button>
@@ -53,6 +58,7 @@ export default function LoginPage() {
 
         {/* Credentials Login */}
         <form action={dispatch} className="space-y-4">
+          <input type="hidden" name="redirectTo" value={callbackUrl} />
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" type="email" placeholder="m@example.com" required />
@@ -74,5 +80,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
