@@ -83,6 +83,10 @@ export class MockYnsProvider {
     return this.products;
   }
 
+  async productBrowse({ active, limit }: { active?: boolean; limit?: number }): Promise<Product[]> {
+    return this.products.slice(0, limit);
+  }
+
   async productGet({ slug }: { slug: string }): Promise<Product | undefined> {
     return this.products.find((p) => p.slug === slug);
   }
