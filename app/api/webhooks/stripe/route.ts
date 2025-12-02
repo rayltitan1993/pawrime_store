@@ -36,9 +36,11 @@ export async function POST(req: NextRequest) {
   switch (event.type) {
     case "checkout.session.completed":
       const session = event.data.object as any;
+      console.log(`[Stripe Webhook] Processing checkout.session.completed for session ${session.id}`);
+      console.log(`[Stripe Webhook] Metadata:`, session.metadata);
 
       if (!session.metadata?.cartId) {
-        console.error("Checkout session missing cartId in metadata.", session);
+        console.error("[Stripe Webhook] Checkout session missing cartId in metadata.", session);
         return NextResponse.json(
           { error: "Checkout session missing cartId in metadata" },
           { status: 400 }
@@ -47,12 +49,13 @@ export async function POST(req: NextRequest) {
 
       const cartId = session.metadata.cartId;
       const userId = session.metadata.userId; // Optionally stored from auth session
+      console.log(`[Stripe Webhook] Cart ID: ${cartId}, User ID: ${userId || "Guest"}`);
 
       // Retrieve cart from our in-memory store (or mock data)
       const cart = await ynsClient.cartGet({ cartId });
 
       if (!cart || cart.lineItems.length === 0) {
-        console.error("Cart not found or empty for session", session);
+        console.error(`[Stripe Webhook] Cart not found or empty for cartId ${cartId}`);
         // Acknowledge event to Stripe even if cart is empty to prevent retries
         return NextResponse.json({ received: true }); 
       }
@@ -89,13 +92,13 @@ export async function POST(req: NextRequest) {
             },
           },
         });
-        console.log("Order created:", order.id);
+        console.log(`[Stripe Webhook] Order created successfully: ${order.id}`);
 
         // Optionally clear the cart after order creation (if using persistent cart)
         // For now, our mock cart clears on server restart.
 
       } catch (dbError: any) {
-        console.error("Error creating order in database:", dbError);
+        console.error("[Stripe Webhook] Error creating order in database:", dbError);
         return NextResponse.json(
           { error: `Database error: ${dbError.message}` },
           { status: 500 }
@@ -104,7 +107,7 @@ export async function POST(req: NextRequest) {
 
       break;
     default:
-      console.log(`Unhandled event type ${event.type}`);
+      console.log(`[Stripe Webhook] Unhandled event type ${event.type}`);
   }
 
   return NextResponse.json({ received: true });

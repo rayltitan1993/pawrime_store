@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { ynsClient } from "../../src/yns-client";
+import { revalidatePath } from "next/cache";
 
 export async function getCart() {
 	const cookieStore = await cookies();
@@ -66,6 +67,7 @@ export async function addToCart(variantId: string, quantity = 1) {
         });
     }
 
+    revalidatePath("/", "layout");
 	return { success: true, cart };
 }
 
@@ -89,6 +91,7 @@ export async function removeFromCart(variantId: string) {
 			lines,
 		});
 
+        revalidatePath("/", "layout");
 		return { success: true, cart };
 	} catch {
 		return { success: false, cart: null };
@@ -124,6 +127,7 @@ export async function setCartQuantity(variantId: string, quantity: number) {
         }
 
 		const cart = await ynsClient.cartUpsert({ cartId, lines });
+        revalidatePath("/", "layout");
 		return { success: true, cart };
 	} catch {
 		return { success: false, cart: null };
