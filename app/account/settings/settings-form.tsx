@@ -81,21 +81,28 @@ export default function SettingsForm({ addresses, hasPassword }: SettingsFormPro
                       <Input id="country" name="country" placeholder="USA" required />
                     </div>
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="street">Street Address</Label>
+                    <Label htmlFor="street">Address Line 1</Label>
                     <Input id="street" name="street" placeholder="123 Main St" required />
                   </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="street2">Address Line 2 (Optional)</Label>
+                    <Input id="street2" name="street2" placeholder="Apt, Suite, Unit, etc." />
+                  </div>
+
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="city">City</Label>
                       <Input id="city" name="city" placeholder="New York" required />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="state">State</Label>
-                      <Input id="state" name="state" placeholder="NY" required />
+                      <Label htmlFor="state">State / Province</Label>
+                      <Input id="state" name="state" placeholder="NY (Optional)" />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="zip">ZIP Code</Label>
+                      <Label htmlFor="zip">ZIP / Postal Code</Label>
                       <Input id="zip" name="zip" placeholder="10001" required />
                     </div>
                   </div>
@@ -133,7 +140,10 @@ export default function SettingsForm({ addresses, hasPassword }: SettingsFormPro
                   <div className="space-y-1 text-sm mb-4">
                     <p className="font-semibold">{addr.name}</p>
                     <p>{addr.street}</p>
-                    <p>{addr.city}, {addr.state} {addr.zip}</p>
+                    {addr.street2 && <p>{addr.street2}</p>}
+                    <p>
+                      {addr.city}{addr.state ? `, ${addr.state}` : ""} {addr.zip}
+                    </p>
                     <p>{addr.country}</p>
                   </div>
                   <div className="flex justify-end gap-2">

@@ -18,9 +18,10 @@ const ChangePasswordSchema = z.object({
 const AddressSchema = z.object({
   name: z.string().min(1, "Name is required"),
   street: z.string().min(1, "Street address is required"),
+  street2: z.string().optional(),
   city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  zip: z.string().min(1, "ZIP code is required"),
+  state: z.string().optional(),
+  zip: z.string().min(1, "ZIP / Postal code is required"),
   country: z.string().min(1, "Country is required"),
   isDefault: z.boolean().optional(),
 });
@@ -74,6 +75,7 @@ export async function addAddress(prevState: any, formData: FormData) {
   const validatedFields = AddressSchema.safeParse({
     name: formData.get("name"),
     street: formData.get("street"),
+    street2: formData.get("street2"),
     city: formData.get("city"),
     state: formData.get("state"),
     zip: formData.get("zip"),

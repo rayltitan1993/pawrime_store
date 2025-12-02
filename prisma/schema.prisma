@@ -69,8 +69,9 @@ model Address {
   
   name      String?  // 收件人姓名
   street    String
+  street2   String?  // Apartment, suite, unit, etc.
   city      String
-  state     String
+  state     String?  // Optional: State, Province, County
   zip       String
   country   String
   isDefault Boolean  @default(false)
