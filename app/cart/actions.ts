@@ -18,31 +18,55 @@ export async function getCart() {
 	}
 }
 
+// Helper to convert Domain Cart to Input Lines for Upsert
+function mapCartToLines(cart: any): { productVariantId: string; quantity: number }[] {
+    if (!cart || !cart.lineItems) return [];
+    return cart.lineItems.map((item: any) => ({
+        productVariantId: item.productVariant.id,
+        quantity: item.quantity
+    }));
+}
+
 export async function addToCart(variantId: string, quantity = 1) {
 	const cookieStore = await cookies();
 	const cartId = cookieStore.get("cartId")?.value;
 
+    let lines: { productVariantId: string; quantity: number }[] = [];
+    
+    if (cartId) {
+        const currentCart = await ynsClient.cartGet({ cartId });
+        if (currentCart) {
+            lines = mapCartToLines(currentCart);
+        }
+    }
+
+    const existingItemIndex = lines.findIndex(l => l.productVariantId === variantId);
+    if (existingItemIndex > -1) {
+        lines[existingItemIndex].quantity += quantity;
+    } else {
+        lines.push({ productVariantId: variantId, quantity });
+    }
+
 	const cart = await ynsClient.cartUpsert({
 		cartId,
-		variantId,
-		quantity,
+		lines,
 	});
 
 	if (!cart) {
 		return { success: false, cart: null };
 	}
 
-	cookieStore.set("cartId", cart.id, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "lax",
-		maxAge: 60 * 60 * 24 * 30, // 30 days
-	});
+    // Ensure cookie is set (important for first creation)
+    if (!cartId || cartId !== cart.id) {
+        cookieStore.set("cartId", cart.id, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 30, // 30 days
+        });
+    }
 
-	// Fetch full cart data to sync with client
-	const fullCart = await ynsClient.cartGet({ cartId: cart.id });
-
-	return { success: true, cart: fullCart };
+	return { success: true, cart };
 }
 
 export async function removeFromCart(variantId: string) {
@@ -54,23 +78,23 @@ export async function removeFromCart(variantId: string) {
 	}
 
 	try {
-		// Set quantity to 0 to remove the item
-		await ynsClient.cartUpsert({
+        const currentCart = await ynsClient.cartGet({ cartId });
+        if (!currentCart) return { success: false, cart: null };
+
+        // Filter out the item to remove
+        const lines = mapCartToLines(currentCart).filter(l => l.productVariantId !== variantId);
+
+		const cart = await ynsClient.cartUpsert({
 			cartId,
-			variantId,
-			quantity: 0,
+			lines,
 		});
 
-		// Fetch updated cart
-		const cart = await ynsClient.cartGet({ cartId });
 		return { success: true, cart };
 	} catch {
 		return { success: false, cart: null };
 	}
 }
 
-// Set absolute quantity for a cart item
-// Calculates delta internally since cartUpsert uses delta behavior
 export async function setCartQuantity(variantId: string, quantity: number) {
 	const cookieStore = await cookies();
 	const cartId = cookieStore.get("cartId")?.value;
@@ -80,24 +104,26 @@ export async function setCartQuantity(variantId: string, quantity: number) {
 	}
 
 	try {
-		// Get current cart to calculate delta
 		const currentCart = await ynsClient.cartGet({ cartId });
-		const currentItem = currentCart?.lineItems.find((item) => item.productVariant.id === variantId);
-		const currentQuantity = currentItem?.quantity ?? 0;
+        if (!currentCart) return { success: false, cart: null };
 
-		if (quantity <= 0) {
-			// Remove item by setting quantity to 0
-			await ynsClient.cartUpsert({ cartId, variantId, quantity: 0 });
-		} else {
-			// Calculate delta for cartUpsert
-			const delta = quantity - currentQuantity;
-			if (delta !== 0) {
-				await ynsClient.cartUpsert({ cartId, variantId, quantity: delta });
-			}
-		}
+        let lines = mapCartToLines(currentCart);
+        
+        if (quantity <= 0) {
+            // Remove item
+            lines = lines.filter(l => l.productVariantId !== variantId);
+        } else {
+            // Update quantity
+             const existingItemIndex = lines.findIndex(l => l.productVariantId === variantId);
+             if (existingItemIndex > -1) {
+                 lines[existingItemIndex].quantity = quantity;
+             } else {
+                 // Should theoretically not happen if setting quantity of existing item, but safe to add
+                 lines.push({ productVariantId: variantId, quantity });
+             }
+        }
 
-		// Fetch updated cart
-		const cart = await ynsClient.cartGet({ cartId });
+		const cart = await ynsClient.cartUpsert({ cartId, lines });
 		return { success: true, cart };
 	} catch {
 		return { success: false, cart: null };
