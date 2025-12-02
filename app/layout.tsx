@@ -12,6 +12,7 @@ import "./globals.css";
 import { Toaster } from "../src/components/ui/sonner";
 import { UserMenu } from "./user-menu";
 import { ShoppingCartIcon } from "lucide-react";
+import { auth } from "../auth";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -54,6 +55,7 @@ async function getInitialCart() {
 
 async function CartProviderWrapper({ children }: { children: React.ReactNode }) {
 	const { cart, cartId } = await getInitialCart();
+    const session = await auth();
 
 	return (
 		<CartProvider initialCart={cart} initialCartId={cartId}>
@@ -80,7 +82,7 @@ async function CartProviderWrapper({ children }: { children: React.ReactNode }) 
 				</div>
 				<Footer />
 			</div>
-			<CartSidebar />
+			<CartSidebar user={session?.user} />
 		</CartProvider>
 	);
 }

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "../../src/components/ui/button";
 import { ScrollArea } from "../../src/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "../../src/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "../../src/components/ui/dialog";
 import { formatMoney } from "../../src/money";
 import { useCart } from "./cart-context";
 import { CartItem } from "./cart-item";
@@ -14,12 +15,22 @@ import { CartItem } from "./cart-item";
 const currency = "USD";
 const locale = "en-US";
 
-export function CartSidebar() {
+interface CartSidebarProps {
+    user?: {
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+    };
+}
+
+export function CartSidebar({ user }: CartSidebarProps) {
 	const { isOpen, closeCart, items, itemCount, subtotal, cartId } = useCart();
 
 	const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+    const [isCheckoutDialogOpen, setIsCheckoutDialogOpen] = useState(false);
 
 	const handleCheckout = async () => {
+        setIsCheckoutDialogOpen(false); // Close dialog if open
 		setIsCheckoutLoading(true);
 		try {
 			const response = await fetch("/api/checkout", {
@@ -40,7 +51,16 @@ export function CartSidebar() {
 		}
 	};
 
+    const onCheckoutClick = () => {
+        if (user) {
+            handleCheckout();
+        } else {
+            setIsCheckoutDialogOpen(true);
+        }
+    };
+
 	return (
+        <>
 		<Sheet open={isOpen} onOpenChange={(open) => !open && closeCart()}>
 			<SheetContent className="flex flex-col w-full sm:max-w-lg">
 				<SheetHeader className="border-b border-border pb-4">
@@ -84,7 +104,7 @@ export function CartSidebar() {
 								<p className="text-xs text-muted-foreground">Shipping and taxes calculated at checkout</p>
 								<Button 
 									className="w-full h-12 text-base font-medium" 
-									onClick={handleCheckout}
+									onClick={onCheckoutClick}
 									disabled={isCheckoutLoading}
 								>
 									{isCheckoutLoading ? "Redirecting..." : "Checkout"}
@@ -102,5 +122,28 @@ export function CartSidebar() {
 				)}
 			</SheetContent>
 		</Sheet>
+
+        <Dialog open={isCheckoutDialogOpen} onOpenChange={setIsCheckoutDialogOpen}>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle>How would you like to checkout?</DialogTitle>
+                    <DialogDescription>
+                        Sign in to save your order history and speed up future purchases, or continue as a guest.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-col gap-3 py-4">
+                     <Link href="/login?callbackUrl=/cart" onClick={() => { closeCart(); setIsCheckoutDialogOpen(false); }}>
+                        <Button className="w-full" size="lg">Sign In & Checkout</Button>
+                    </Link>
+                    <div className="relative flex items-center justify-center text-xs uppercase text-muted-foreground">
+                         <span className="bg-background px-2">Or</span>
+                    </div>
+                    <Button variant="outline" className="w-full" size="lg" onClick={handleCheckout} disabled={isCheckoutLoading}>
+                         {isCheckoutLoading ? "Redirecting..." : "Checkout as Guest"}
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+        </>
 	);
 }

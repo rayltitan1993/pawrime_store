@@ -81,6 +81,34 @@ model Address {
 }
 
 // E-commerce Models
+
+// Persistent Cart
+model Cart {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  lines     CartLine[]
+}
+
+model CartLine {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  
+  productId String
+  variantId String
+  quantity  Int
+  
+  // Snapshot of product details to avoid fetching external API every time
+  // In a real app, you might only store IDs and fetch fresh data, 
+  // but for this "mock" replacement, storing details makes it easier to match existing logic.
+  productSlug   String
+  productName   String
+  productImage  String
+  variantName   String
+  price         String // Storing as string to match current logic or int cents
+}
+
 model Order {
   id              String      @id @default(cuid())
   userId          String?     // Nullable for guest checkout (optional)
