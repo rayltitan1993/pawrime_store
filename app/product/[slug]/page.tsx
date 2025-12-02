@@ -40,6 +40,9 @@ const ProductDetails = async ({ slug }: { slug: string }) => {
 		...product.variants.flatMap((v) => v.images).filter((img) => !product.images.includes(img)),
 	];
 
+    // Remove circular reference for Client Component serialization
+    const variantsForDisplay = product.variants.map(({ product: _p, ...v }) => v);
+
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 			<div className="lg:grid lg:grid-cols-2 lg:gap-16">
@@ -59,7 +62,7 @@ const ProductDetails = async ({ slug }: { slug: string }) => {
 
 					{/* Variant Selector, Quantity, Add to Cart, Trust Badges */}
 					<AddToCartButton
-						variants={product.variants}
+						variants={variantsForDisplay}
 						product={{
 							id: product.id,
 							name: product.name,
