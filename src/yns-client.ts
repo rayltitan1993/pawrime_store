@@ -16,6 +16,18 @@ export interface ProductVariant {
   price: string;
   images: string[];
   product: Product;
+  combinations: {
+    variantValue: {
+      id: string;
+      value: string;
+      colorValue: string | null;
+      variantType: {
+        id: string;
+        type: "string" | "color";
+        label: string;
+      };
+    };
+  }[];
 }
 
 export interface Cart {
@@ -42,11 +54,61 @@ export class MockYnsProvider {
       description: "The Basic Tee is an essential wardrobe staple...",
       images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800"],
       variants: [
-        { id: "var_1", name: "Black / S", price: "2000", images: [], product: {} as any },
-        { id: "var_2", name: "Black / M", price: "2000", images: [], product: {} as any },
-        { id: "var_3", name: "Black / L", price: "2000", images: [], product: {} as any },
-        { id: "var_4", name: "White / S", price: "2000", images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800"], product: {} as any },
-        { id: "var_5", name: "White / M", price: "2000", images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800"], product: {} as any },
+        { 
+            id: "var_1", 
+            name: "Black / S", 
+            price: "2000", 
+            images: [], 
+            product: {} as any,
+            combinations: [
+                { variantValue: { id: "val_black", value: "Black", colorValue: "#000000", variantType: { id: "type_color", type: "color", label: "Color" } } },
+                { variantValue: { id: "val_s", value: "S", colorValue: null, variantType: { id: "type_size", type: "string", label: "Size" } } }
+            ]
+        },
+        { 
+            id: "var_2", 
+            name: "Black / M", 
+            price: "2000", 
+            images: [], 
+            product: {} as any,
+            combinations: [
+                { variantValue: { id: "val_black", value: "Black", colorValue: "#000000", variantType: { id: "type_color", type: "color", label: "Color" } } },
+                { variantValue: { id: "val_m", value: "M", colorValue: null, variantType: { id: "type_size", type: "string", label: "Size" } } }
+            ]
+        },
+        { 
+            id: "var_3", 
+            name: "Black / L", 
+            price: "2000", 
+            images: [], 
+            product: {} as any,
+            combinations: [
+                { variantValue: { id: "val_black", value: "Black", colorValue: "#000000", variantType: { id: "type_color", type: "color", label: "Color" } } },
+                { variantValue: { id: "val_l", value: "L", colorValue: null, variantType: { id: "type_size", type: "string", label: "Size" } } }
+            ]
+        },
+        { 
+            id: "var_4", 
+            name: "White / S", 
+            price: "2000", 
+            images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800"], 
+            product: {} as any,
+            combinations: [
+                { variantValue: { id: "val_white", value: "White", colorValue: "#FFFFFF", variantType: { id: "type_color", type: "color", label: "Color" } } },
+                { variantValue: { id: "val_s", value: "S", colorValue: null, variantType: { id: "type_size", type: "string", label: "Size" } } }
+            ]
+        },
+        { 
+            id: "var_5", 
+            name: "White / M", 
+            price: "2000", 
+            images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=800"], 
+            product: {} as any,
+            combinations: [
+                { variantValue: { id: "val_white", value: "White", colorValue: "#FFFFFF", variantType: { id: "type_color", type: "color", label: "Color" } } },
+                { variantValue: { id: "val_m", value: "M", colorValue: null, variantType: { id: "type_size", type: "string", label: "Size" } } }
+            ]
+        },
       ],
     },
     {
@@ -57,7 +119,16 @@ export class MockYnsProvider {
       description: "Enjoy your favorite hot beverage...",
       images: ["https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&q=80&w=800"],
       variants: [
-        { id: "var_6", name: "Standard", price: "1500", images: [], product: {} as any },
+        { 
+            id: "var_6", 
+            name: "Standard", 
+            price: "1500", 
+            images: [], 
+            product: {} as any,
+            combinations: [
+                 { variantValue: { id: "val_std", value: "Standard", colorValue: null, variantType: { id: "type_std", type: "string", label: "Option" } } }
+            ]
+        },
       ],
     },
     {
@@ -68,8 +139,26 @@ export class MockYnsProvider {
       description: "Keep your cards and cash organized...",
       images: ["https://images.unsplash.com/photo-1627123424574-1837526ae418?auto=format&fit=crop&q=80&w=800"],
       variants: [
-        { id: "var_7", name: "Brown", price: "4500", images: [], product: {} as any },
-        { id: "var_8", name: "Black", price: "4500", images: [], product: {} as any },
+        { 
+            id: "var_7", 
+            name: "Brown", 
+            price: "4500", 
+            images: [], 
+            product: {} as any,
+            combinations: [
+                { variantValue: { id: "val_brown", value: "Brown", colorValue: "#8B4513", variantType: { id: "type_color", type: "color", label: "Color" } } }
+            ]
+        },
+        { 
+            id: "var_8", 
+            name: "Black", 
+            price: "4500", 
+            images: [], 
+            product: {} as any,
+            combinations: [
+                { variantValue: { id: "val_black", value: "Black", colorValue: "#000000", variantType: { id: "type_color", type: "color", label: "Color" } } }
+            ]
+        },
       ],
     },
   ];
@@ -111,6 +200,7 @@ export class MockYnsProvider {
         name: line.variantName,
         price: line.price,
         images: line.productImage ? [line.productImage] : [],
+        combinations: [], // Missing in DB, defaulting to empty
         product: {
           id: line.productId,
           slug: line.productSlug,
@@ -221,6 +311,7 @@ export class MockYnsProvider {
         name: line.variantName,
         price: line.price,
         images: line.productImage ? [line.productImage] : [],
+        combinations: [], // Missing in DB, defaulting to empty
         product: {
           id: line.productId,
           slug: line.productSlug,
