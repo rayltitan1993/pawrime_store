@@ -9,10 +9,11 @@ import { ProductFeatures } from "./product-features";
 const currency = "USD";
 const locale = "en-US";
 
-export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+	const { slug } = await params;
 	return (
-		<Suspense>
-			<ProductDetails params={props.params} />
+		<Suspense fallback={null}>
+			<ProductDetails slug={slug} />
 		</Suspense>
 	);
 }
