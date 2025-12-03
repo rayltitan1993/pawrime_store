@@ -59,7 +59,7 @@ export function Footer() {
 				</div>
 				<div className="mt-12 border-t border-border pt-8">
 					<p className="text-base text-muted-foreground text-center">
-						&copy; {new Date().getFullYear()} Your Next Store. All rights reserved.
+						&copy; {new Date().getFullYear()} Pawrime. All rights reserved.
 					</p>
 				</div>
 			</div>
